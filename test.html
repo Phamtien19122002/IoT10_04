@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="test.css" />
+  </head>
+  <body>
+    <h1 style="color: rgb(93, 93, 152)">MY HOME</h1>
+    <div class="container">
+      <div class="button-container">
+        <div class="thena">
+          <h3>Nhiệt Độ <span id="temperatureDisplay">00</span></h3>
+          <h3>Độ Ẩm <span id="humidityDisplay">00</span></h3>
+          <div id="alertMessage" style="display: none; color: red;">Gas Detected! Take necessary action</div>
+         <div>
+           <button class="button"  id="gasButton" style="display: none;">Cancel</button>
+         </div>
+        </div>
+        
+        <div class="thena">
+          <span class="icon">&#128161; &#x128161;</span>
+          <p>Đèn sân</p>
+          <p>Chế độ: Auto</p>
+          <div>
+            <button class="button" id="toggleBtn_1">OFF</button>
+            <button class="button" id="toggleBtn_2">OFF</button>
+          </div>
+        </div>
+
+        <div class="thena">
+          <span class="icon">&#128161; &#x128161;</span>
+          <p>Đèn sân</p>
+          <p>Chế độ: Auto</p>
+          <div>
+            <button class="button" id="toggleBtn_3">OFF</button>
+            <button class="button" id="toggleBtn_4">OFF</button>
+          </div>
+        </div>
+
+        <div class="thena">
+          <span class="icon">&#128161; &#x128161;</span>
+          <p>Đèn sân</p>
+          <p>Chế độ: Auto</p>
+          <div>
+            <button class="button" id="toggleBtn_5">OFF</button>
+            <button class="button" id="toggleBtn_6">OFF</button>
+          </div>
+        </div>
+
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    
+
+
+    <script>
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyBOYaH_2H4bSs3O2w-q752rstYo-m1p8lA",
+        authDomain: "esp32-4862b.firebaseapp.com",
+        databaseURL: "https://esp32-4862b-default-rtdb.firebaseio.com",
+        projectId: "esp32-4862b",
+        storageBucket: "esp32-4862b.appspot.com",
+        messagingSenderId: "652366525630",
+        appId: "1:652366525630:web:72cede8aa0f2e02659daef",
+        measurementId: "G-R7JDKZ9KCB",
+      };
+
+      // Khởi tạo Firebase
+      const app = firebase.initializeApp(firebaseConfig);
+      const database = app.database();
+
+      const temperatureRef = database.ref("iot_1/temp");
+      temperatureRef.on("value", function (snapshot) {
+        const temperature = snapshot.val();
+        document.getElementById("temperatureDisplay").innerText =
+          temperature + " °C";
+      });
+
+      // Lấy dữ liệu từ Firebase Realtime Database cho độ ẩm
+      const humidityRef = database.ref("iot_1/hum");
+      humidityRef.on("value", function (snapshot) {
+        const humidity = snapshot.val();
+        document.getElementById("humidityDisplay").innerText = humidity + " %";
+      });
+
+
+      function updateToggleState(ledNumber, ledState) {
+        const toggleBtn = document.getElementById(`toggleBtn_${ledNumber}`);
+        if (ledState === 1) {
+          toggleBtn.innerText = `${ledNumber}: Off`;
+        } else {
+          toggleBtn.innerText = `${ledNumber}: On`;
+        }
+      }
+
+      // Function để cập nhật trạng thái từ Firebase Realtime Database
+      function watchToggleState(ledNumber) {
+        firebase
+          .database()
+          .ref(`/iot/led_${ledNumber}`)
+          .on("value", function (snapshot) {
+            const ledState = snapshot.val();
+            updateToggleState(ledNumber, ledState);
+          });
+      }
+
+      // Cập nhật trạng thái ban đầu của các LED từ Firebase
+      watchToggleState(1);
+      watchToggleState(2);
+      watchToggleState(3);
+      watchToggleState(4);
+      watchToggleState(5);
+      watchToggleState(6);
+
+      // Xử lý sự kiện khi nhấn các nút chuyển đổi
+      for (let i = 1; i <= 6; i++) {
+        const toggleBtn = document.getElementById(`toggleBtn_${i}`);
+        toggleBtn.onclick = function () {
+          firebase
+            .database()
+            .ref(`/iot/led_${i}`)
+            .once("value")
+            .then(function (snapshot) {
+              const currentLedState = snapshot.val();
+              const newLedState = currentLedState === 1 ? 0 : 1;
+              firebase.database().ref(`/iot/led_${i}`).set(newLedState);
+            });
+        };
+      }
+
+
+
+    firebase.database().ref("/iot_1/gas").on("value", function(snapshot) {
+      const gasValue = snapshot.val();
+      const gasButton = document.getElementById("gasButton");
+      const alertMessage = document.getElementById("alertMessage");
+
+      if (gasValue == 0 && gasButton.style.display === "none") {
+        // Hiển thị cảnh báo và nút bấm nếu phát hiện khí gas và nút đã bị ẩn trước đó
+        alertMessage.style.display = "block";
+        gasButton.style.display = "block";
+      } else if (gasValue === 1 ) {
+        // Ẩn cảnh báo và nút bấm nếu khí gas đã không còn được phát hiện
+        alertMessage.style.display = "none";
+        gasButton.style.display = "none";
+      }
+    });
+
+     document.getElementById("gasButton").onclick = function() {
+      // Biến mất nút bấm khi nút được nhấn
+      this.style.display = "none";
+      
+    };
+    </script>
+  </body>
+</html>

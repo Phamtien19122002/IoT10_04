@@ -1,0 +1,61 @@
+ html {
+     font-family: Helvetica;
+     display: inline-block;
+     margin: 0px auto;
+     text-align: center;
+ }
+
+ body {
+     background-color: rgb(37, 37, 74);
+     /* hoặc mã màu xám khác mà bạn muốn sử dụng */
+ }
+
+ .button-container {
+     display: flex;
+     justify-content: space-around;
+ }
+
+ .button-container a {
+     flex: 1;
+ }
+
+ .button {
+     background-color: rgb(199, 186, 6);
+     border: none;
+     color: #fff;
+     padding: auto;
+     /* Giảm kích thước nút */
+     text-decoration: none;
+     font-size: 20px;
+     /* Giảm kích thước chữ */
+     margin: 5px;
+     /* Tăng khoảng cách giữa các nút */
+     cursor: pointer;
+     border-radius: 10px;
+     /* Bo tròn góc */
+     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+     /* Đổ bóng */
+     transition: 0.3s;
+     /* Hiệu ứng chuyển đổi */
+     width: 140px;
+     height: 50px;
+ }
+
+ .button:hover {
+     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+     /* Đổi bóng khi di chuột vào */
+     border: solid #000 1px;
+ }
+
+
+
+ .icon {
+     font-size: 50px;
+     margin-bottom: 10px;
+ }
+
+ .thena {
+     width: 250px;
+     background-color: rgb(93, 93, 152);
+     border-radius: 20px;
+ }
